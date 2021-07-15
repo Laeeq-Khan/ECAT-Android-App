@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">UET ECAT</string>
+    <string name="universityname">University of Engineering and Technology Lahore</string>
+    <string name="testname">Combined Entry Test 2021</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
