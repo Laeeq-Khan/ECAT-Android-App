@@ -1,46 +1,39 @@
 package uet.ecat.app;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+
+
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.lifecycle.ProcessCameraProvider;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
-import android.app.FragmentTransaction;
-import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import com.budiyev.android.codescanner.CodeScanner;
-import com.budiyev.android.codescanner.CodeScannerView;
-import com.budiyev.android.codescanner.DecodeCallback;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.zxing.Result;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
 import uet.ecat.app.fragments.QRcodeScannerFragemtn;
+import uet.ecat.app.models.Student;
+import uet.ecat.app.services.StudentService;
 
 public class Invigilator extends AppCompatActivity {
 
-    ImageView barcodescannerimage;
-    View preview_view;
+    private ImageView barcodescannerimage;
+    private  View preview_view;
+    private StudentService studentService;
     private CodeScanner mCodeScanner;
     private static final int MY_CAMERA_REQUEST_CODE = 100;
+    private Button startButton;
+    private EditText pinEditButton;
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,15 +43,19 @@ public class Invigilator extends AppCompatActivity {
         events();
 
 
-        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
+            }
         }
 
     }
 
     private void registerControls(){
-         barcodescannerimage = findViewById(R.id.barcodescannerimage);
-         preview_view = findViewById(R.id.preview_view);
+        barcodescannerimage = findViewById(R.id.barcodescannerimage);
+        preview_view = findViewById(R.id.preview_view);
+        startButton = findViewById(R.id.startButton);
+        pinEditButton = findViewById(R.id.pinEditButton);
     }
     private void events(){
         barcodescannerimage.setOnClickListener(new View.OnClickListener() {
@@ -72,6 +69,13 @@ public class Invigilator extends AppCompatActivity {
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction()
                         .replace(R.id.preview_view, mFragment).commit();
+            }
+        });
+
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                verify(pinEditButton.getText().toString());
             }
         });
     }
@@ -89,4 +93,21 @@ public class Invigilator extends AppCompatActivity {
             }
         }
     }
+
+    private void verify(String roll){
+        try{
+            studentService = new StudentService();
+            Student student = studentService.findByRoll(roll);
+            if(student != null){
+                Intent intent =  new Intent(getApplicationContext(), StudentProfile.class);
+                intent.putExtra("student", student);
+                startActivity(intent);
+            }else{
+                Toast.makeText(getApplicationContext(), "Wrong Pin", Toast.LENGTH_SHORT).show();
+            }
+        }catch (NullPointerException e){
+            System.out.println(e);
+        }
+    }
+
 }

@@ -3,13 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="uet.ecat.app">
 
-    <uses-sdk tools:overrideLibrary="
-      androidx.camera.camera2, androidx.camera.core,
-      androidx.camera.view, androidx.camera.lifecycle" />
+    <uses-sdk tools:overrideLibrary="androidx.camera.camera2, androidx.camera.core,androidx.camera.view, androidx.camera.lifecycle" />
 
     <uses-feature android:name="android.hardware.camera" />
-    <uses-permission android:name="android.permission.CAMERA" />
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -18,19 +19,24 @@
         android:roundIcon="@drawable/uetlogo"
         android:supportsRtl="true"
         android:theme="@style/Theme.EcatApp">
+        <service
+            android:name=".services.LocationMonitoring"
+            android:enabled="true"
+            android:exported="true"></service>
 
-        <activity android:name=".Invigilator" >
-
-        </activity>
-        <activity
-            android:name=".MainActivity"
-            android:lockTaskMode="if_whitelisted">
+        <activity android:name=".ResultSaveActivity" />
+        <activity android:name=".Exam" />
+        <activity android:name=".ExamInstructionsScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".SupridendentPinScreen" />
+        <activity android:name=".StudentProfile" />
+        <activity android:name=".Invigilator" />
+        <activity android:name=".MainActivity"></activity>
     </application>
 
 </manifest>
